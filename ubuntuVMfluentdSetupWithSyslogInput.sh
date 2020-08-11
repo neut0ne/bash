@@ -39,7 +39,7 @@ cd ~/etc/security
 echo $'\n# fluentd limits\n\nroot soft nofile 65536\nroot hard nofile 65536\n* soft nofile 65536\n* hard nofile 65536' >> /etc/security/limits.conf
 reboot
 
-# 1.4 Recommended for distros with large datastreams, multiple fluentd nodes etc:
+# 1.4 Recommended for distros with large datastreams, and multiple fluentd nodes:
 # Optimize Network Kernel Parameters; see fluentd official pre-installation docs
 # https://docs.fluentd.org/installation/before-install
 
