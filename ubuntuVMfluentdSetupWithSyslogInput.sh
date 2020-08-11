@@ -65,7 +65,7 @@ tail -n 1 /var/log/td-agent/td-agent.log
 #
 #   # provides UDP syslog reception
 #   module(load="imudp")
-#   input(type="imudp" port="514")
+#   input(type="imudp" port="5140")
 
 # 3.2 enable rsyslog. Wanted status == running
 systemctl start rsyslog.service
