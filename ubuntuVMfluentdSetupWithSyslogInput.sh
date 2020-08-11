@@ -54,7 +54,19 @@ systemctl start td-agent.service
 systemctl status td-agent.service
 
 # 2.3 send a sample log over http.
-# Expected output in terminal: {date} {time} -0700 debug.test: {"test":"it worked!"}
+# Expected output in terminal: {timestamp} debug.test: {"test":"it worked!"}
 curl -X POST -d 'json={"test":"it worked!"}' http://localhost:8888/debug.test
 tail -n 1 /var/log/td-agent/td-agent.log
 
+# 3.0 setup syslog input
+
+# 3.1 enable rsyslog. Wanted status == running
+systemctl start rsyslog.service
+systemctl status rsyslog.service
+
+# 3.2 td-agent minimal syslog input config
+echo $'\n\n<source>\n  @type syslog\n  port 5140\n  bind 0.0.0.0\n  tag system\n</source>' >> /etc/td-agent/td-agent.conf
+
+#3.3 rsyslog send to port 5140
+echo $'\n\n# Send log messages to Fluentd\n*.* @127.0.0.1:5140' >> /etc/rsyslog.conf
+reboot
