@@ -60,6 +60,9 @@ tail -n 1 /var/log/td-agent/td-agent.log
 
 # 3.0 setup syslog input
 
+# 3.1 add UDP input to rsyslog
+awk 'NR==16{print $'\n\n'# provides UDP syslog reception'\nmodule(load="imudp")\ninput(type="imudp" port="514")'}1' /etc/rsyslog.conf
+
 # 3.1 enable rsyslog. Wanted status == running
 systemctl start rsyslog.service
 systemctl status rsyslog.service
@@ -70,3 +73,14 @@ echo $'\n\n<source>\n  @type syslog\n  port 5140\n  bind 0.0.0.0\n  tag system\n
 #3.3 rsyslog send to port 5140
 echo $'\n\n# Send log messages to Fluentd\n*.* @127.0.0.1:5140' >> /etc/rsyslog.conf
 reboot
+
+
+# Diagnostics: 
+
+# a. see logs from fluentd (see that fluentd is receiving logs)
+# tail -f /var/log/td-agent/td-agent.log
+
+# b. see incoming syslog
+# tail -f /var/log/syslog
+
+# c. see logs from rsyslog (forwards syslog to fluentd over udp)
