@@ -60,8 +60,8 @@ tail -n 1 /var/log/td-agent/td-agent.log
 
 # 3.0 setup syslog input
 
-# 3.1 add UDP input to rsyslog
-awk 'NR==16{print $'\n\n'# provides UDP syslog reception'\nmodule(load="imudp")\ninput(type="imudp" port="514")'}1' /etc/rsyslog.conf
+# 3.1 add UDP input to rsyslog (edit needed)
+# awk 'NR==16{print $'\n\n'# provides UDP syslog reception'\nmodule(load="imudp")\ninput(type="imudp" port="514")'}1' /etc/rsyslog.conf
 
 # 3.1 enable rsyslog. Wanted status == running
 systemctl start rsyslog.service
@@ -73,6 +73,22 @@ echo $'\n\n<source>\n  @type syslog\n  port 5140\n  bind 0.0.0.0\n  tag system\n
 #3.3 rsyslog send to port 5140
 echo $'\n\n# Send log messages to Fluentd\n*.* @127.0.0.1:5140' >> /etc/rsyslog.conf
 reboot
+
+# (optional) send syslog to file
+# This is a way to confirm that the syslogs are reaching all the way through fluentd to output.
+# change path to writable:
+# chmod +777 /var/log/fluentd
+# Add to /etc/td-agent/td-agent.conf:
+#<match pattern>
+#  @type file
+#  path /var/log/fluent/myproof
+#  compress gzip
+#  <buffer>
+#    timekey 1m
+#    timekey_use_utc true
+#    timekey_wait 1m
+#  </buffer>
+#</match>
 
 
 # Diagnostics: 
