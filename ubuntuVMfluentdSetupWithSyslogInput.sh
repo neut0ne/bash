@@ -2,7 +2,7 @@
 
 # Setup fluentd on ubuntu vm, and add syslog input
 # How to run: Open the vm terminal and download the script to the root dir.
-# Make it executable: 
+# Make it executable: {not finished}
 # If you don't have bash installed: sudo apt-get install bash
 # DON'T FORGET! Replace all curly brackets with current version number!
 
