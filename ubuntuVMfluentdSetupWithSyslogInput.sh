@@ -81,7 +81,7 @@ reboot
 # (optional) send syslog to file
 # This is a way to confirm that the syslogs are reaching all the way through fluentd to output.
 # change path to writable:
-# chmod +777 /var/log/fluentd
+# chmod +777 /var/log/fluent
 # Add to /etc/td-agent/td-agent.conf:
 #<match pattern>
 #  @type file
