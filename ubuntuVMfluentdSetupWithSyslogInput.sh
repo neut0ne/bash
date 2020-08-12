@@ -28,11 +28,13 @@ cd /etc
 touch chrony.conf
 echo $'pool pool.ntp.org iburst\nmakestep 1.0 3\nrtcsync' >> chrony.conf
 
-# 1.2.3 start chrony daemon
+# 1.2.3 start chrony daemon and check status
 cd ~/chrony-{version.number}
 ./chronyd
+chronyc tracking
 
 # 1.2.4 add chrony daemon to autostart
+systemctl enable chrony
 
 # 1.3 Increase Max # of File Descriptors
 cd ~/etc/security
