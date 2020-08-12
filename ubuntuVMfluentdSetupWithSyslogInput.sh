@@ -77,7 +77,8 @@ systemctl status rsyslog.service
 echo $'\n\n<source>\n  @type syslog\n  port 5140\n  bind 0.0.0.0\n  tag system\n</source>' >> /etc/td-agent/td-agent.conf
 
 #3.4 rsyslog send to port 5140
-echo $'\n\n# Send log messages to Fluentd\n*.* @127.0.0.1:5140' >> /etc/rsyslog.conf
+touch ~/etc/rsyslog.d/40-fluentd.conf
+echo $'\n\n# Send log messages to Fluentd\n*.* @127.0.0.1:5140' > /etc/rsyslog.d/40-fluentd.conf
 reboot
 
 # (optional) send syslog to file
