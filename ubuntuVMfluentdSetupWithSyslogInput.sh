@@ -99,6 +99,9 @@ reboot
 #   </buffer>
 # </match>
 
+# 4.0 Add LM_out fluentd plugin
+# LM_out is available with gem install 
+
 
 # Diagnostics: 
 
