@@ -81,21 +81,23 @@ touch ~/etc/rsyslog.d/40-fluentd.conf
 echo $'\n\n# Send log messages to Fluentd\n*.* @127.0.0.1:5140' > /etc/rsyslog.d/40-fluentd.conf
 reboot
 
-# (optional) send syslog to file
-# This is a way to confirm that the syslogs are reaching all the way through fluentd to output.
-# change path to writable:
-# chmod +777 /var/log/fluent
+# # (optional) send syslog to file
+# # This is a way to confirm that the syslogs are reaching all the way through fluentd to output.
+# # create a new .log directory:
+# mkdir /var/log/fluent/myproof.log
+# # change path to writable:
+# chmod +777 /var/log/fluent/myproof.log
 # Add to /etc/td-agent/td-agent.conf:
-#<match pattern>
-#  @type file
-#  path /var/log/fluent/myproof
-#  compress gzip
-#  <buffer>
-#    timekey 1m
-#    timekey_use_utc true
-#    timekey_wait 1m
-#  </buffer>
-#</match>
+# <match pattern>
+#   @type file
+#   path /var/log/fluent/myproof.log
+#   compress gzip
+#   <buffer>
+#     timekey 1m
+#     timekey_use_utc true
+#     timekey_wait 1m
+#   </buffer>
+# </match>
 
 
 # Diagnostics: 
