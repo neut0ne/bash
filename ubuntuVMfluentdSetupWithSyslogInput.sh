@@ -39,11 +39,9 @@ make install
 cd /etc
 touch chrony.conf
 echo $'
-
 pool pool.ntp.org iburst
 makestep 1.0 3
 rtcsync
-
 ' >> chrony.conf
 
 # 1.2.3 start chrony daemon and check status
@@ -57,13 +55,11 @@ systemctl enable chrony
 # 1.3 Increase Max # of File Descriptors
 cd ~/etc/security
 echo $'
-
 # fluentd limits\n\n\
 root  soft  nofile  65536
 root  hard  nofile  65536
 *     soft  nofile  65536
 *     hard  nofile  65536
-
 ' >> /etc/security/limits.conf
 reboot
 
