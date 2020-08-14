@@ -9,7 +9,8 @@
 # - Under Settings > users & roles, create a user role. Take note of the 
 #   access ID and access key. 
 # In this script: 
-# - replace <version_number> with version number for service.
+# - replace <version_number> with version number for service. Do also remove 
+#   the tags < > .
 # - uncomment script # 4.0 to add rsyslog-fluentd pipeline debugging (optional)
 # - in # 5.1 configure td-agent to send logs to LM:
 #    - replace <company_name> with the name of your account (is your account 
