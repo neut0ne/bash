@@ -100,10 +100,30 @@ reboot
 # </match>
 
 # 4.0 Add LM_out fluentd plugin
-# LM_out is available with gem install 
+td-agent-gem install lm-logs-fluentd
+
+# 4.1 configure td-agent to send logs to LM
+echo $"\
+># Match events tagged with "lm.**" and\
+># send them to LogicMonitor\
+><match system.**>\
+>    @type lm\
+>    company_name <company_name>\
+>    resource_mapping {"event_key": "lm_property"}\
+>    access_id <access_id>\
+>    access_key <access_key>\
+>    tag system\
+>    flush_interval 1s\
+>    debug true\
+></match>\
+>" >> ~/etc/td-agent/td-agent.conf
+systemctl restart td-agent
 
 
 # Diagnostics: 
+
+# a. Check status of services:
+# systemctl status rsyslog td-agent chrony
 
 # a. see logs from fluentd (see that fluentd is receiving logs)
 # tail -f /var/log/td-agent/td-agent.log
