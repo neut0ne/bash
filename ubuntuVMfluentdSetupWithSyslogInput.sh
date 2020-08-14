@@ -1,16 +1,19 @@
 #! /usr/bin/bash
 
-# Setup fluentd on ubuntu vm, add an rsyslog debug filedirectory, and send syslog to a LogicMonitor account.
+# Setup fluentd on ubuntu vm, add an rsyslog debug filedirectory, and send 
+# syslog to a LogicMonitor account.
 # How to run: Open the vm terminal and download the script to the root dir.
 # Make it executable: `sudo chmod +x ubuntuVMfluentdSetupWithSyslogInput.sh`
 # In LogicMonitor account: 
 # - Enable Logs.
-# - Under Settings > users & roles, create a user role. Take note of the access ID and access key. 
+# - Under Settings > users & roles, create a user role. Take note of the 
+#   access ID and access key. 
 # In this script: 
 # - replace <version_number> with version number for service.
 # - uncomment script # 4.0 to add rsyslog-fluentd pipeline debugging (optional)
 # - in # 5.1 configure td-agent to send logs to LM:
-#    - replace <company_name> with the name of your account (is your account name hello.logicmonitor.com, then your company_name is hello.)
+#    - replace <company_name> with the name of your account (is your account 
+#      name hello.logicmonitor.com, then your company_name is hello.)
 #    - replace <access_id> with the access ID of the role you created.
 #    - replace <access_key> with the roles' access key.
 
