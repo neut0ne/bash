@@ -36,13 +36,11 @@ make
 make install
 
 # 1.2.2 chrony minimal config
-cd /etc
-touch chrony.conf
 echo $'
 pool pool.ntp.org iburst
 makestep 1.0 3
 rtcsync
-' >> chrony.conf
+' >> ../etc/chrony.conf
 
 # 1.2.3 start chrony daemon and check status
 cd ~/chrony-<version.number>
@@ -53,14 +51,13 @@ chronyc tracking
 systemctl enable chrony
 
 # 1.3 Increase Max # of File Descriptors
-cd ~/etc/security
 echo $'
 # fluentd limits\n\n\
 root  soft  nofile  65536
 root  hard  nofile  65536
 *     soft  nofile  65536
 *     hard  nofile  65536
-' >> /etc/security/limits.conf
+' >> ../etc/security/limits.conf
 reboot
 
 # 1.4 Recommended for distros with large datastreams, and multiple fluentd nodes:
@@ -89,7 +86,7 @@ echo $'
 # provides UDP syslog reception
 module(load="imudp")
 input(type="imudp" port="5140")
-' >> /etc/rsyslog.conf
+' >> ../etc/rsyslog.conf
 
 # 3.2 enable rsyslog. Wanted status == running
 systemctl restart rsyslog.service
@@ -103,14 +100,13 @@ echo $'\n\n
   bind 0.0.0.0
   tag system
 </source>
-' >> /etc/td-agent/td-agent.conf
+' >> ../etc/td-agent/td-agent.conf
 
 #3.4 rsyslog send to port 5140
-touch ~/etc/rsyslog.d/40-fluentd.conf
 echo $'\n\n
 # Send log messages to Fluentd
 *.* @127.0.0.1:5140
-' > /etc/rsyslog.d/40-fluentd.conf
+' > ../etc/rsyslog.d/40-fluentd.conf
 reboot
 
 #4.0 # (optional) output syslog to local file
@@ -128,7 +124,7 @@ reboot
 #     timekey_wait 1m
 #   </buffer>
 # </match>
-# ' >> /etc/td-agent/td-agent.conf
+# ' >> ../etc/td-agent/td-agent.conf
 # systemctl restart td-agent
 
 # 5.0 Add LM_out fluentd plugin
@@ -148,7 +144,7 @@ echo $'
     flush_interval 1s
     debug true
 </match>
-' >> /etc/td-agent/td-agent.conf
+' >> ../etc/td-agent/td-agent.conf
 systemctl restart td-agent
 
 # Done!
