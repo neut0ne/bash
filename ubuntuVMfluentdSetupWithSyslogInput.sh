@@ -106,7 +106,7 @@ echo $'\n\n
 echo $'\n\n
 # Send log messages to Fluentd
 *.* @127.0.0.1:5140
-' > ../etc/rsyslog.d/40-fluentd.conf
+' >> ../etc/rsyslog.d/40-fluentd.conf
 reboot
 
 #4.0 # (optional) output syslog to local file
