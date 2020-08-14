@@ -1,10 +1,16 @@
 #! /usr/bin/bash
 
-# Setup fluentd on ubuntu vm, and add syslog input
+# Setup fluentd on ubuntu vm, add an rsyslog debug filedirectory, and send logs to LogicMonitor account.
 # How to run: Open the vm terminal and download the script to the root dir.
 # Make it executable: {not finished}
 # If you don't have bash installed: sudo apt-get install bash
-# DON'T FORGET! Replace all curly brackets with current version number!
+# In LogicMonitor account: Create a user role. Take note of the access ID and access key. 
+# In this script: 
+# - replace <version_number> with version number for service.
+# - in # 4.1 configure td-agent to send logs to LM:
+#    - replace <company_name> with the name of your account (is your account name hello.logicmonitor.com, then your company_name is hello.)
+#    - replace <access_id> with the access ID of the role you created.
+#    - replace <access_key> with the roles' access key.
 
 # run as root
 sudo -s
@@ -17,7 +23,7 @@ apt-get autoremove
 
 # 1.2.1 set up latest chrony
 wget 'https://downloads.tuxfamily.org/chrony/chrony-{version.number}.tar.gz'
-tar -xvf chrony-{version.number}.tar.gz
+tar -xvf chrony-<version.number>.tar.gz
 cd chrony-{version.number}
 ./configure
 make
@@ -26,7 +32,11 @@ make install
 # 1.2.2 chrony minimal config
 cd /etc
 touch chrony.conf
-echo $'pool pool.ntp.org iburst\nmakestep 1.0 3\nrtcsync' >> chrony.conf
+echo $'\
+>pool pool.ntp.org iburst\n\
+>makestep 1.0 3\n\
+>rtcsync'\
+> >> chrony.conf
 
 # 1.2.3 start chrony daemon and check status
 cd ~/chrony-{version.number}
@@ -38,7 +48,13 @@ systemctl enable chrony
 
 # 1.3 Increase Max # of File Descriptors
 cd ~/etc/security
-echo $'\n# fluentd limits\n\nroot soft nofile 65536\nroot hard nofile 65536\n* soft nofile 65536\n* hard nofile 65536' >> /etc/security/limits.conf
+echo $'\n\
+># fluentd limits\n\n\
+>root soft nofile 65536\n\
+>root hard nofile 65536\n\
+>* soft nofile 65536\n\
+>* hard nofile 65536'\
+> >> /etc/security/limits.conf
 reboot
 
 # 1.4 Recommended for distros with large datastreams, and multiple fluentd nodes:
@@ -62,7 +78,10 @@ tail -n 1 /var/log/td-agent/td-agent.log
 
 # 3.0 setup syslog input
 
-# 3.1 add UDP input to rsyslog (done manually f.n)
+# 3.1 add UDP input to rsyslog
+echo $"
+"
+
 #   in /etc/rsyslog.conf, insert:
 #
 #   # provides UDP syslog reception
@@ -74,7 +93,14 @@ systemctl start rsyslog.service
 systemctl status rsyslog.service
 
 # 3.3 td-agent minimal syslog input config
-echo $'\n\n<source>\n  @type syslog\n  port 5140\n  bind 0.0.0.0\n  tag system\n</source>' >> /etc/td-agent/td-agent.conf
+echo $'\n\n\
+><source>\n\
+>  @type syslog\n\
+>  port 5140\n\
+>  bind 0.0.0.0\n\
+>  tag system\n\
+></source>'\
+> >> /etc/td-agent/td-agent.conf
 
 #3.4 rsyslog send to port 5140
 touch ~/etc/rsyslog.d/40-fluentd.conf
@@ -125,11 +151,11 @@ systemctl restart td-agent
 # a. Check status of services:
 # systemctl status rsyslog td-agent chrony
 
-# a. see logs from fluentd (see that fluentd is receiving logs)
+# a. see logs from fluentd:
 # tail -f /var/log/td-agent/td-agent.log
 
-# b. see incoming syslog
+# b. see incoming syslog:
 # tail -f /var/log/syslog
 
-# c. check system logs for rsyslog errors (forwards syslog to fluentd over udp)
+# c. check system logs for rsyslog errors:
 # sudo cat /var/log/messages | grep rsyslog
