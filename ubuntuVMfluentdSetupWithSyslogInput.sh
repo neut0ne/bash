@@ -1,18 +1,20 @@
 #! /usr/bin/bash
 
-# Setup fluentd on ubuntu vm, add an rsyslog debug filedirectory, and send logs to LogicMonitor account.
+# Setup fluentd on ubuntu vm, add an rsyslog debug filedirectory, and send syslog to a LogicMonitor account.
 # How to run: Open the vm terminal and download the script to the root dir.
-# Make it executable: {not finished}
-# If you don't have bash installed: sudo apt-get install bash
-# In LogicMonitor account: Create a user role. Take note of the access ID and access key. 
+# Make it executable: `sudo chmod +x ubuntuVMfluentdSetupWithSyslogInput.sh`
+# In LogicMonitor account: 
+# - Enable Logs.
+# - Under Settings > users & roles, create a user role. Take note of the access ID and access key. 
 # In this script: 
 # - replace <version_number> with version number for service.
-# - in # 4.1 configure td-agent to send logs to LM:
+# - uncomment script # 4.0 to add rsyslog-fluentd pipeline debugging (optional)
+# - in # 5.1 configure td-agent to send logs to LM:
 #    - replace <company_name> with the name of your account (is your account name hello.logicmonitor.com, then your company_name is hello.)
 #    - replace <access_id> with the access ID of the role you created.
 #    - replace <access_key> with the roles' access key.
 
-# run as root
+# 0.0 Run as root
 sudo -s
 
 # 1.0 Pre-installation
@@ -22,9 +24,9 @@ apt-get install gcc build-essential curl
 apt-get autoremove
 
 # 1.2.1 set up latest chrony
-wget 'https://downloads.tuxfamily.org/chrony/chrony-{version.number}.tar.gz'
+wget 'https://downloads.tuxfamily.org/chrony/chrony-<version.number>.tar.gz'
 tar -xvf chrony-<version.number>.tar.gz
-cd chrony-{version.number}
+cd chrony-<version_number>
 ./configure
 make
 make install
@@ -41,7 +43,7 @@ rtcsync
 ' >> chrony.conf
 
 # 1.2.3 start chrony daemon and check status
-cd ~/chrony-{version.number}
+cd ~/chrony-<version.number>
 ./chronyd
 chronyc tracking
 
@@ -111,8 +113,8 @@ echo $'\n\n
 ' > /etc/rsyslog.d/40-fluentd.conf
 reboot
 
-# # (optional) send syslog to file
-# # Uncomment the following 15 rows to add rsyslog-fluentd debug file storage.
+#4.0 # (optional) output syslog to local file
+#    # Uncomment the following 15 rows to add rsyslog-fluentd debug file storage.
 # mkdir /var/log/td-agent/debug.log
 # chmod +777 /var/log/td-agent/debug.log
 # echo $'
@@ -129,10 +131,10 @@ reboot
 # ' >> /etc/td-agent/td-agent.conf
 # systemctl restart td-agent
 
-# 4.0 Add LM_out fluentd plugin
+# 5.0 Add LM_out fluentd plugin
 td-agent-gem install lm-logs-fluentd
 
-# 4.1 configure td-agent to send logs to LM
+# 5.1 configure td-agent to send logs to LM
 echo $'
 # Match events tagged with "lm.**" and
 # send them to LogicMonitor
@@ -146,11 +148,15 @@ echo $'
     flush_interval 1s
     debug true
 </match>
-' >> ~/etc/td-agent/td-agent.conf
+' >> /etc/td-agent/td-agent.conf
 systemctl restart td-agent
 
 # Done!
-# If you have setup syslog debug files, you can check that logs are coming in to 
+# If you have setup syslog debug files, you can check that logs 
+# are coming in to /var/log/td-agent/debug.log. In the first day, 
+# you will se log buffers. The buffers will be archived once per 24 hours.
+# In a couple of minutes' time, you should be able to see syslog from your 
+# ubuntu vm in the LogicMonitor account.
 
 # Diagnostics: 
 
