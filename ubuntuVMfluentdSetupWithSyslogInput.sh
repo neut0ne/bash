@@ -32,11 +32,13 @@ make install
 # 1.2.2 chrony minimal config
 cd /etc
 touch chrony.conf
-echo $'\
->pool pool.ntp.org iburst\n\
->makestep 1.0 3\n\
->rtcsync'\
-> >> chrony.conf
+echo $'
+
+pool pool.ntp.org iburst
+makestep 1.0 3
+rtcsync
+
+' >> chrony.conf
 
 # 1.2.3 start chrony daemon and check status
 cd ~/chrony-{version.number}
@@ -48,13 +50,15 @@ systemctl enable chrony
 
 # 1.3 Increase Max # of File Descriptors
 cd ~/etc/security
-echo $'\n\
-># fluentd limits\n\n\
->root soft nofile 65536\n\
->root hard nofile 65536\n\
->* soft nofile 65536\n\
->* hard nofile 65536'\
-> >> /etc/security/limits.conf
+echo $'
+
+# fluentd limits\n\n\
+root  soft  nofile  65536
+root  hard  nofile  65536
+*     soft  nofile  65536
+*     hard  nofile  65536
+
+' >> /etc/security/limits.conf
 reboot
 
 # 1.4 Recommended for distros with large datastreams, and multiple fluentd nodes:
@@ -79,44 +83,42 @@ tail -n 1 /var/log/td-agent/td-agent.log
 # 3.0 setup syslog input
 
 # 3.1 add UDP input to rsyslog
-echo $"
-"
-
-#   in /etc/rsyslog.conf, insert:
-#
-#   # provides UDP syslog reception
-#   module(load="imudp")
-#   input(type="imudp" port="5140")
+echo $'
+# provides UDP syslog reception
+module(load="imudp")
+input(type="imudp" port="5140")
+' >> /etc/rsyslog.conf
 
 # 3.2 enable rsyslog. Wanted status == running
-systemctl start rsyslog.service
+systemctl restart rsyslog.service
 systemctl status rsyslog.service
 
 # 3.3 td-agent minimal syslog input config
-echo $'\n\n\
-><source>\n\
->  @type syslog\n\
->  port 5140\n\
->  bind 0.0.0.0\n\
->  tag system\n\
-></source>'\
-> >> /etc/td-agent/td-agent.conf
+echo $'\n\n
+<source>
+  @type syslog
+  port 5140
+  bind 0.0.0.0
+  tag system
+</source>
+' >> /etc/td-agent/td-agent.conf
 
 #3.4 rsyslog send to port 5140
 touch ~/etc/rsyslog.d/40-fluentd.conf
-echo $'\n\n# Send log messages to Fluentd\n*.* @127.0.0.1:5140' > /etc/rsyslog.d/40-fluentd.conf
+echo $'\n\n
+# Send log messages to Fluentd
+*.* @127.0.0.1:5140
+' > /etc/rsyslog.d/40-fluentd.conf
 reboot
 
 # # (optional) send syslog to file
-# # This is a way to confirm that the syslogs are reaching all the way through fluentd to output.
-# # create a new .log directory:
-# mkdir /var/log/fluent/myproof.log
-# # change path to writable:
-# chmod +777 /var/log/fluent/myproof.log
-# Add to /etc/td-agent/td-agent.conf:
+# # Uncomment the following 15 rows to add rsyslog-fluentd debug file storage.
+# mkdir /var/log/td-agent/debug.log
+# chmod +777 /var/log/td-agent/debug.log
+# echo $'
 # <match pattern>
 #   @type file
-#   path /var/log/fluent/myproof.log
+#   path /var/log/td-agent/debug.log
 #   compress gzip
 #   <buffer>
 #     timekey 1m
@@ -124,27 +126,31 @@ reboot
 #     timekey_wait 1m
 #   </buffer>
 # </match>
+# ' >> /etc/td-agent/td-agent.conf
+# systemctl restart td-agent
 
 # 4.0 Add LM_out fluentd plugin
 td-agent-gem install lm-logs-fluentd
 
 # 4.1 configure td-agent to send logs to LM
-echo $"\
-># Match events tagged with "lm.**" and\
-># send them to LogicMonitor\
-><match system.**>\
->    @type lm\
->    company_name <company_name>\
->    resource_mapping {"event_key": "lm_property"}\
->    access_id <access_id>\
->    access_key <access_key>\
->    tag system\
->    flush_interval 1s\
->    debug true\
-></match>\
->" >> ~/etc/td-agent/td-agent.conf
+echo $'
+# Match events tagged with "lm.**" and
+# send them to LogicMonitor
+<match system.**>
+    @type lm
+    company_name <company_name>
+    resource_mapping {"event_key": "lm_property"}
+    access_id <access_id>
+    access_key <access_key>
+    tag system
+    flush_interval 1s
+    debug true
+</match>
+' >> ~/etc/td-agent/td-agent.conf
 systemctl restart td-agent
 
+# Done!
+# If you have setup syslog debug files, you can check that logs are coming in to 
 
 # Diagnostics: 
 
