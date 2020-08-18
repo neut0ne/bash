@@ -11,7 +11,7 @@
 # In this script: 
 # - replace <version_number> with version number for service. Do also remove 
 #   the tags < > .
-# - uncomment script # 4.0 to add rsyslog-fluentd pipeline debugging (optional)
+# - optional: uncomment script # 4.0 to add rsyslog-fluentd pipeline debugging
 # - in # 5.1 configure td-agent to send logs to LM:
 #    - replace <company_name> with the name of your account (is your account 
 #      name hello.logicmonitor.com, then your company_name is hello.)
@@ -132,15 +132,22 @@ td-agent-gem install lm-logs-fluentd
 
 # 5.1 configure td-agent to send logs to LM
 echo $'
+<filter system.**>
+  @type record_transformer
+  <record>
+    _lm.resourceId {"hostname":"@hostname"}
+    tag lm.system
+  </record>
+</filter>
+
 # Match events tagged with "lm.**" and
 # send them to LogicMonitor
-<match system.**>
+<match lm.system.**>
     @type lm
     company_name <company_name>
-    resource_mapping {"event_key": "lm_property"}
+    resource_mapping {"hostname": "system.hostname"}
     access_id <access_id>
     access_key <access_key>
-    tag system
     flush_interval 1s
     debug true
 </match>
@@ -159,11 +166,11 @@ systemctl restart td-agent
 # a. Check status of services:
 # systemctl status rsyslog td-agent chrony
 
-# a. see logs from fluentd:
+# b. see logs from fluentd:
 # tail -f /var/log/td-agent/td-agent.log
 
-# b. see incoming syslog:
+# c. see incoming syslog:
 # tail -f /var/log/syslog
 
-# c. check system logs for rsyslog errors:
+# d. check system logs for rsyslog errors:
 # sudo cat /var/log/messages | grep rsyslog
