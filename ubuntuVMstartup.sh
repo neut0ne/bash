@@ -13,6 +13,6 @@ sudo -s
 apt-get update
 apt-get upgrade
 apt-get autoremove
-apt-get install make gcc linux-headers-$(uname -r)
+apt-get install make gcc openssh-server linux-headers-$(uname -r)
 ./media/{user}/{opticaldrive}/autorun.sh
 
