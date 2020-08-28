@@ -2,12 +2,16 @@
 
 # Setup fluentd on ubuntu vm, add an rsyslog debug filedirectory, and send
 # syslog to a LogicMonitor account.
+# Prerequisites: An Oracle VirtualBox VM with Linux Ubuntu 64 distro, with an 
+# installed LogicMonitor collector.
 # How to run: Open the vm terminal and download the script to the root dir.
 # Make it executable: `sudo chmod +x ubuntuVMfluentdSetupWithSyslogInput.sh`
 # In LogicMonitor account:
 # - Enable Logs.
 # - Under Settings > users & roles, create a user role. Take note of the
 #   access ID and access key.
+# - Under collector resource Info > Auto & Systems properties, choose a unique 
+#   key-value property to map the resource to. 
 # In this script (optional):
 # - uncomment script # 4.0 to add rsyslog-fluentd pipeline debugging
 
