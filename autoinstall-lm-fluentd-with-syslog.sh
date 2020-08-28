@@ -166,30 +166,3 @@ if [ $? -eq 0 ]; then
 else
     echo $'Configuration failed with an error. Please contact support.\n'
 fi
-
-# Done!
-# If you have setup syslog debug files, you can check that logs
-# are coming in to /var/log/td-agent/debug.log. In the first day,
-# you will se log buffers. The buffers will be archived once per 24 hours.
-# If configurations are accurate, you will be able to see syslog from your
-# ubuntu vm in the LogicMonitor account right away.
-
-# Diagnostics:
-
-# a. Check status of services:
-# systemctl status rsyslog td-agent chrony
-# chronyc tracking
-
-# b. see logs from fluentd:
-# tail -f /var/log/td-agent/td-agent.log
-
-# c. see incoming syslog:
-# tail -f /var/log/syslog
-
-# d. check system logs for rsyslog errors:
-# sudo cat /var/log/messages | grep rsyslog
-
-# e. send a sample log over http.
-# Expected output in terminal: {timestamp} debug.test: {"test":"it worked!"}
-# curl -X POST -d 'json={"test":"it worked!"}' http://localhost:8888/debug.test
-# tail -n 1 /var/log/td-agent/td-agent.log
