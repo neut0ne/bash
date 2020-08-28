@@ -8,10 +8,8 @@
 # - Enable Logs.
 # - Under Settings > users & roles, create a user role. Take note of the
 #   access ID and access key.
-# In this script:
-# - replace <version_number> with version number for service. Do also remove
-#   the tags < > .
-# - optional: uncomment script # 4.0 to add rsyslog-fluentd pipeline debugging
+# In this script (optional):
+# - uncomment script # 4.0 to add rsyslog-fluentd pipeline debugging
 
 # 0.0 enter credentials
 read -p $'Enter company_name (the LogicMonitor account name):\n' company_name
@@ -93,9 +91,7 @@ echo $"
   @type record_transformer
   <record>
     _lm.resourceId {\"$resource_mapping_key\":\"$resource_mapping_key_value\"}
-#    tag ${tag}
   </record>
-  tag lm.system
 </filter>
 
 # Match events tagged with "lm.system**" and
