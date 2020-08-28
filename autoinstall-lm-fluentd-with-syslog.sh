@@ -1,9 +1,5 @@
 #! /bin/bash
 
-#exec 3>&1 4>&2
-#trap 'exec 2>&4 1>&3' 0 1 2 3
-#exec 1>~/tmp/LM_fluentd_install$(date).log 2>&1
-
 # Setup fluentd on ubuntu vm, add an rsyslog debug filedirectory, and send
 # syslog to a LogicMonitor account.
 # How to run: Open the vm terminal and download the script to the root dir.
@@ -16,10 +12,6 @@
 # - replace <version_number> with version number for service. Do also remove
 #   the tags < > .
 # - optional: uncomment script # 4.0 to add rsyslog-fluentd pipeline debugging
-
-# 0.0 Installation log:
-# today=$(date +"%Y-%m-%d")
-# automated_LM_fluentd_setup.sh 2>&1 | tee -a /tmp/LM_fluentd_install${today}.log
 
 # 0.0 enter credentials
 read -p $'Enter company_name (the LogicMonitor account name):\n' company_name
