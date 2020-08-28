@@ -166,13 +166,8 @@ if [ $? -eq 0 ]; then
     echo $'\n\n Fluentd and lm-logs syslog setup completed.\n'
     echo $'Find the installation log in /tmp.\n'
 else
-    echo $'Configuration failed with an error.\n'
+    echo $'Configuration failed with an error. Please contact support.\n'
 fi
-
-# Uncomment for debugging:
-# echo $'Current fluentd status:\n\n'
-# tail -f -n 50 /var/log/td-agent/td-agent.log
-
 
 # Done!
 # If you have setup syslog debug files, you can check that logs
