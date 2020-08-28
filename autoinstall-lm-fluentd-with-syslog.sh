@@ -1,63 +1,5 @@
 #! /bin/bash
 
-# Setup fluentd on ubuntu vm, add an rsyslog debug filedirectory, and send
-# syslog to a LogicMonitor account.
-# How to run: Open the vm terminal and download the script to the root dir.
-# Make it executable: `sudo chmod +x ubuntuVMfluentdSetupWithSyslogInput.sh`
-# In LogicMonitor account:
-# - Enable Logs.
-# - Under Settings > users & roles, create a user role. Take note of the
-#   access ID and access key.
-# In this script:
-# - replace <version_number> with version number for service. Do also remove
-#   the tags < > .
-# - optional: uncomment script # 4.0 to add rsyslog-fluentd pipeline debugging
-
-# 0.0 enter credentials
-read -p $'Enter company_name (the LogicMonitor account name):\n' company_name
-read -p $'Enter resource_mapping key:\n' resource_mapping_key
-read -p $'Enter resource_mapping key value:\n' resource_mapping_key_value
-read -p $'Enter role access_ID:\n' access_ID
-read -p $'Enter role access_key:\n' access_key
-
-# 1.0 install dependencies
-echo $'\n Installing dependencies...\n'
-apt-get install -y grep gcc build-essential curl
-apt-get autoremove
-echo $'...done installing dependencies\n'
-
-# 1.2 install chrony, Fluentd deb package, and lm_out fluentd plugin
-echo $'Installing chrony...\n'
-apt-get install chrony
-systemctl enable chrony
-echo $'\nInstalling Fluentd deb package td-agent 4 for Ubuntu 20.04 focal...\n'
-
-
-echo "Configuring UDP for rsyslog..."
-printf -v s "%s\n" '
-# provides UDP syslog reception for lm logs fluentd
-module(load="imudp")
-input(type="imudp" port="5140")
-'
-grep -Fxq "$s" /etc/rsyslog.conf
-if grep -Fxq "$s" /etc/rsyslog.conf;
-then
-    echo "Config already exists. Continuing..."
-else
-    echo "$s" >> /etc/rsyslog.conf
-fi
-
-# 3.0 apply configurations
-echo "Applying configurations..."
-systemctl restart chrony td-agent rsyslog
-if [ $? -eq 0 ]; then
-    echo $'\n\n Fluentd and lm-logs syslog setup completed.\n'
-    echo $'Find the installation log in /tmp.\n'
-else
-    echo $'Configuration failed with an error.\n'
-fi
-#! /bin/bash
-
 #exec 3>&1 4>&2
 #trap 'exec 2>&4 1>&3' 0 1 2 3
 #exec 1>~/tmp/LM_fluentd_install$(date).log 2>&1
@@ -236,6 +178,7 @@ else
 fi
 echo $'Current fluentd status:\n\n'
 tail -f -n 50 /var/log/td-agent/td-agent.log
+
 
 # Done!
 # If you have setup syslog debug files, you can check that logs
