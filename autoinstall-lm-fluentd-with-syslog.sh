@@ -168,8 +168,10 @@ if [ $? -eq 0 ]; then
 else
     echo $'Configuration failed with an error.\n'
 fi
-echo $'Current fluentd status:\n\n'
-tail -f -n 50 /var/log/td-agent/td-agent.log
+
+# Uncomment for debugging:
+# echo $'Current fluentd status:\n\n'
+# tail -f -n 50 /var/log/td-agent/td-agent.log
 
 
 # Done!
