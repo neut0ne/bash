@@ -162,7 +162,7 @@ fi
 echo "Applying configurations..."
 systemctl restart chrony td-agent rsyslog
 if [ $? -eq 0 ]; then
-    echo $'\n\n Fluentd and lm-logs syslog setup completed.\n
+    echo $'\n\n Fluentd and lm-logs syslog setup completed.\n'
 else
     echo $'Configuration failed with an error. Please contact support.\n'
 fi
